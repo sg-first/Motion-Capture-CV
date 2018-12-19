@@ -1,6 +1,6 @@
 import numpy as np
 
-dataSize=10
+dataSize=2
 x=np.zeros((4,4,dataSize))
 y_armL=np.zeros((2,dataSize))
 y_armR=np.zeros((2,dataSize))
