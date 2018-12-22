@@ -26,6 +26,6 @@ model5=d(model1)
 
 e=keras.models.Model(inputs=input,outputs=[model2,model3,model4,model5])
 e.compile(optimizer='rmsprop',loss='hinge')
-grid.grid.init_search(e,[0,1280],[data.x,[data.y_armL,data.y_armR,data.y_legL,data.y_legR]],[data.x,[data.y_armL,data.y_armR,data.y_legL,data.y_legR]],data.x,tho=99,)
+grid.grid.init_search(e,[0,1280],[data.x,[data.y_armL,data.y_armR,data.y_legL,data.y_legR]],[data.x,[data.y_armL,data.y_armR,data.y_legL,data.y_legR]],data.x,tho=0.5,)
 #model.compile(optimizer='rmsprop',loss='hinge')
 print(e.evaluate(data.x,[data.y_armL,data.y_armR,data.y_legL,data.y_legR], batch_size=2))

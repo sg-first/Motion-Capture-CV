@@ -1,7 +1,7 @@
 import numpy as np
 
 # 参数为：待搜索模型、搜索范围、训练数据、验证数据、预测数据（x），验证损失阈值（大于阈值不进行predict验证）、（训练和验证的）batch大小
-def init_search(model,Range,TrainData,testData,x_pre,tho=99999,batch_size=0.5):
+def init_search(model,Range,TrainData,testData,x_pre,tho=99999,batch_size=-1):
     if batch_size==-1:
         batch_size=len(TrainData[0])
         
