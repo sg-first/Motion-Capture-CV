@@ -1,6 +1,7 @@
 import keras
 import data
 import numpy as np
+import grid.grid
 from keras import backend as K
 
 input=keras.layers.Input((4,4))
@@ -24,8 +25,7 @@ model4=c(model1)
 model5=d(model1)
 
 e=keras.models.Model(inputs=input,outputs=[model2,model3,model4,model5])
-
 e.compile(optimizer='rmsprop',loss='hinge')
-e.fit(data.x, [data.y_armL,data.y_armR,data.y_legL,data.y_legR],epochs=1000, batch_size=2)
+grid.grid.init_search(e,[0,1280],[data.x,[data.y_armL,data.y_armR,data.y_legL,data.y_legR]],data.x,tho=99999,batch_size=10)
+#model.compile(optimizer='rmsprop',loss='hinge')
 print(e.evaluate(data.x,[data.y_armL,data.y_armR,data.y_legL,data.y_legR], batch_size=2))
-print(e.predict(data.x, batch_size=2))
