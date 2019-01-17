@@ -22,7 +22,7 @@ out_leg_R=keras.layers.Dense(2, input_shape=(9,), activation='softmax')(model1)
 
 def binary_crossentropy(args):
     y_true, y_pred=args
-    out= K.mean(K.binary_crossentropy(y_pred, y_true), axis=-1)
+    out= K.mean(K.binary_crossentropy( y_true,y_pred), axis=-1)
     return  out
 
 input1=keras.layers.Input(shape=(2,))

@@ -27,11 +27,8 @@ model5=d(model1)
 e=keras.models.Model(inputs=input,outputs=[model2,model3,model4,model5])
 optimizer = keras.optimizers.SGD(lr=0.1, momentum=0)
 
-def binary_crossentropy(y_true, y_pred):
-    g = K.binary_crossentropy(y_pred, y_true)
-    return K.mean(g, axis=-1)
 
-e.compile(optimizer = optimizer,loss=binary_crossentropy)
+e.compile(optimizer = optimizer,loss='binary_crossentropy')
 y=[data.y_armL,data.y_armR,data.y_legL,data.y_legR]
 grid.grid.init_search(e,[400,2790],[data.x,y],[data.x,y],data.x,0.1*1.6,-1,True)
 print(e.evaluate(data.x,y, batch_size=2))
