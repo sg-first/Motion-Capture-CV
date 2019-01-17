@@ -47,7 +47,7 @@ f.compile(optimizer=optimizer,loss=loss)
 
 e=keras.models.Model(inputs=[input,input1,input2,input3,input4],outputs=[loss_out1,loss_out2,loss_out3,loss_out4])
 e.compile(optimizer=optimizer,loss=loss)
-grid.grid.init_search(e,[400,2790],[[data.x]+y,y],[[data.x]+y,y],[data.x]+y,tho=0.05,batch_size=-1,isMulOut=True)
+grid.grid.init_search(e,[400,2790],[[data.x]+y,y],[[data.x]+y,y],[data.x]+y,tho=0.1*1.6,batch_size=-1,isMulOut=True)
 #model.compile(optimizer='rmsprop',loss='hinge')
 print(f.evaluate(data.x,y, batch_size=2))
 x_test=data.x
