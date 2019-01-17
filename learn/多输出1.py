@@ -15,10 +15,10 @@ model.add(keras.layers.Dense(9, input_shape=(10,),activation='relu'))
 
 model1=model(input)
 
-out_arm_L=keras.layers.Dense(2, input_shape=(9,), activation='softmax')(model1)
-out_arm_R=keras.layers.Dense(2, input_shape=(9,), activation='softmax')(model1)
-out_leg_L=keras.layers.Dense(2, input_shape=(9,), activation='softmax')(model1)
-out_leg_R=keras.layers.Dense(2, input_shape=(9,), activation='softmax')(model1)
+out_arm_L=keras.layers.Dense(2, input_shape=(9,), activation='sigmoid')(model1)
+out_arm_R=keras.layers.Dense(2, input_shape=(9,), activation='sigmoid')(model1)
+out_leg_L=keras.layers.Dense(2, input_shape=(9,), activation='sigmoid')(model1)
+out_leg_R=keras.layers.Dense(2, input_shape=(9,), activation='sigmoid')(model1)
 
 def binary_crossentropy(args):
     y_true, y_pred=args
@@ -30,10 +30,10 @@ input2=keras.layers.Input(shape=(2,))
 input3=keras.layers.Input(shape=(2,))
 input4=keras.layers.Input(shape=(2,))
 #计算损失函数层
-loss_out1 = keras.layers.Lambda(binary_crossentropy, output_shape=(2,))([input1, out_arm_L]) # output_shape是函数返回值的shape，第一个维度是占位符
-loss_out2 = keras.layers.Lambda(binary_crossentropy, output_shape=(2,))([input2, out_arm_R]) #
-loss_out3 = keras.layers.Lambda(binary_crossentropy, output_shape=(2,))([input3, out_leg_L])
-loss_out4 = keras.layers.Lambda(binary_crossentropy, output_shape=(2,))([input4, out_leg_R])
+loss_out1 = keras.layers.Lambda(binary_crossentropy, output_shape=(1,))([input1, out_arm_L]) # output_shape是函数返回值的shape，第一个维度是占位符
+loss_out2 = keras.layers.Lambda(binary_crossentropy, output_shape=(1,))([input2, out_arm_R]) #
+loss_out3 = keras.layers.Lambda(binary_crossentropy, output_shape=(1,))([input3, out_leg_L])
+loss_out4 = keras.layers.Lambda(binary_crossentropy, output_shape=(1,))([input4, out_leg_R])
 
 def loss(y_true,y_pred):
     return y_pred
