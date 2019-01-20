@@ -3,12 +3,10 @@
 import ast
 import glob
 import imp
-import logging
 import math
 import os
 import random
 import signal
-import socket
 import time
 
 import click
@@ -17,11 +15,8 @@ import tensorflow as tf
 from tensorflow.python.client import timeline
 import tqdm
 
-
-from clustertools.log import LOGFORMAT
-
-LOGGER = logging.getLogger(__name__)
-
+def printWarn(s):
+    print("WARN: "+s)
 
 def create_restoration_saver(ckpt_path, cur_graph, name='restore', silent=True):
     # load graph from meta file and get ckpt variables
@@ -44,17 +39,15 @@ def create_restoration_saver(ckpt_path, cur_graph, name='restore', silent=True):
             raise ValueError(
                 'Specified checkpoint has no variables in common with the current model.'
             )
-        # determine which variables from checkpoint will be ignored
+        # 确定将忽略检查点中的哪些变量
         ignored_var_names = [v[0] for v in list(set(rest_vars).symmetric_difference(set(ckpt_vars)))]
         if not silent:
             for vn in ignored_var_names:
-                LOGGER.warn(
-                    "Variable `%s` found in specified checkpoint will be ignored!",
-                    vn)
-            # determine which variables won't be restored from checkpoint
+                print("Variable " + str(vn) + " found in specified checkpoint will be ignored!")
+            # 确定哪些变量无法从检查点还原
             nonrest_var_names = [v[0] for v in list(set(rest_vars).symmetric_difference(set(graph_vars)))]
             for vn in nonrest_var_names:
-                LOGGER.warn("Variable `%s` not found in specified checkpoint!", vn)
+                print("Variable " + str(vn) + " not found in specified checkpoint!")
         rest_saver = tf.train.Saver(
             [v for v in tf.global_variables() if v.name in rest_var_names],
             name=name)
@@ -121,9 +114,8 @@ def create_restoration_saver(ckpt_path, cur_graph, name='restore', silent=True):
     is_flag=True,
     help="Ignore batchnorm statistics at test time.")
 def cli(**args):
-    """Main control for the experiments."""
-    LOGGER.info("Running on host: %s", socket.getfqdn())
-    #### SETUP OUTPUT FOLDERS ####
+    """实验的主控"""
+    #### 设置输出文件夹 ####
     exp_name = args['exp_name'].strip("/")
     assert exp_name.startswith(os.path.join("experiments", "config"))
     exp_purename = os.path.basename(exp_name)
@@ -141,7 +133,7 @@ def cli(**args):
         ), "'--out_fp' option required for 'infer_(segment_)fit' modes"
         assert os.path.exists(
             args['inp_fp']), "Specified input dir: '%s' doesn't exist" % (
-                args['inp_fp'])
+            args['inp_fp'])
         output_fp = args['out_fp']
         if not os.path.exists(output_fp):
             os.makedirs(output_fp)
@@ -154,28 +146,27 @@ def cli(**args):
     # check that mode is valid
     mode = args['mode']
     assert mode in exp_config["supp_modes"], (
-        "Unsupported mode by this model: %s, available: %s." %
-        (mode, str(exp_config["supp_modes"])))
-    LOGGER.info("Running mode `%s` for experiment `%s`.", mode, exp_name)
-    # make adjustments to config based on command line parameters
+            "Unsupported mode by this model: %s, available: %s." %
+            (mode, str(exp_config["supp_modes"])))
+    print("Running mode "+str(mode)+" for experiment "+str(exp_name))
+    # 根据命令行参数调整配置
     exp_config = exp_config_mod.adjust_config(exp_config_mod.get_config(),
                                               mode)
     if args["override_dset_name"] is not None:
-        LOGGER.warn("Overriding dset suffix to `%s`!",
-                    args["override_dset_name"])
+        printWarn("Overriding dset suffix to "+str(args["override_dset_name"]))
         exp_config["dataset"] = args["override_dset_name"]
     if args['custom_options'] != '':
         custom_options = ast.literal_eval(args["custom_options"])
         exp_config.update(custom_options)
     exp_config['num_threads'] = args["num_threads"]
     exp_config['ignore_batchnorm_training_stats'] = (
-        args['ignore_batchnorm_stats'] is not None)
+            args['ignore_batchnorm_stats'] is not None)
     exp_config['inp_fp'] = args['inp_fp']
     exp_config['out_fp'] = args['out_fp']
     # print all options
-    LOGGER.info("Configuration:")
+    print("Configuration:")
     for key, val in exp_config.items():
-        LOGGER.info("%s = %s", key, val)
+        print(str(key)+"="+str(val))
     # set random seed
     random.seed(exp_config["seed"])
     tf.set_random_seed(exp_config["seed"])
@@ -202,7 +193,7 @@ def cli(**args):
     latent_mean = smplparams_mean[param_selection]
     latent_std = smplparams_std[param_selection]
 
-    LOGGER.info("Setting up preprocessing...")
+    print("Setting up preprocessing...")
     exp_preproc_mod = imp.load_source(
         '_exp_preprocessor', os.path.join(exp_name, 'preprocessor.py'))
     preprocessor = exp_preproc_mod.Preprocessor(exp_config, mode,
@@ -210,18 +201,17 @@ def cli(**args):
     examples = preprocessor.get_batching_op()
     nsamples = preprocessor.get_num_samples()
     steps_per_epoch = int(math.ceil(1.0 * nsamples / exp_config['batch_size']))
-    LOGGER.info("%d examples prepared, %d steps per epoch.", nsamples,
-                steps_per_epoch)
+    print(str(nsamples)+" examples prepared, "+str(steps_per_epoch)+" steps per epoch.")
 
     #### SETUP MODEL AND LOSS OPS ####
     # Checkpointing.
     # Build model.
-    #TODO should be handled in preprocessor
+    # TODO should be handled in preprocessor
     if mode in ['infer_segment_fit']:
         model_input = examples.crop
     else:
         model_input = examples.intermediate_rep
-    
+
     model_mod = imp.load_source('_model', os.path.join(exp_name, 'model.py'))
     model = model_mod.Model(
         exp_config,
@@ -254,13 +244,13 @@ def cli(**args):
     if args['no_checkpoint']:
         assert args['checkpoint'] is None
     if not args["no_checkpoint"]:
-        LOGGER.info("Looking for checkpoints...")
+        print("Looking for checkpoints...")
         if args['checkpoint'] is not None:
             checkpoint = os.path.splitext(args['checkpoint'])[0]
         else:
             checkpoint = tf.train.latest_checkpoint(exp_log_fp)
         if checkpoint is None:
-            LOGGER.info("No checkpoint found. Continuing without.")
+            print("No checkpoint found. Continuing without.")
         else:
             rest_saver = create_restoration_saver(checkpoint,
                                                   tf.get_default_graph())
@@ -268,7 +258,7 @@ def cli(**args):
         seg_rest_saver = create_restoration_saver(exp_config['seg_model'],
                                                   tf.get_default_graph(),
                                                   name='seg_restore')
-                                 
+
     if mode not in ['train', 'trainval'] and rest_saver is None:
         raise Exception("The mode %s requires a checkpoint!" % (mode))
 
@@ -277,19 +267,11 @@ def cli(**args):
     out_mod = imp.load_source("_write_output",
                               os.path.join(exp_name, 'write_output.py'))
 
-    # setup snapshotting saver
+    # 设置快照保护程序
     if mode in ['train', 'trainval']:
         saver = tf.train.Saver(max_to_keep=exp_config["kept_saves"])
     else:
         saver = None
-
-    # prepare writer for logger output
-    fh = logging.FileHandler(os.path.join(exp_log_fp, 'run.py.log'))
-    fh.setLevel(logging.INFO)
-    formatter = logging.Formatter(LOGFORMAT)
-    fh.setFormatter(formatter)
-    LOGGER.addHandler(fh)
-    LOGGER.info("Running on host: %s", socket.getfqdn())
 
     #### SETUP SESSION ####
     sess_config = tf.ConfigProto(log_device_placement=False)
@@ -305,7 +287,7 @@ def cli(**args):
             parameter_count = tf.reduce_sum([
                 tf.reduce_prod(tf.shape(v)) for v in tf.trainable_variables()
             ])
-        LOGGER.info("Parameter count: %d.", sess.run(parameter_count))
+        print("Parameter count: "+str(sess.run(parameter_count))) # 这个类型……
 
         if mode in ['train', 'trainval']:
             if exp_config["max_epochs"] is not None:
@@ -314,13 +296,13 @@ def cli(**args):
             elif exp_config["max_steps"] is not None:
                 max_steps = exp_config["max_steps"]
                 total_examples_presented = (
-                    max_steps // steps_per_epoch) * nsamples + (
-                        max_steps % steps_per_epoch) * exp_config["batch_size"]
+                                                   max_steps // steps_per_epoch) * nsamples + (
+                                                   max_steps % steps_per_epoch) * exp_config["batch_size"]
             else:
                 raise ValueError(
                     "You need to specify either a maximum nr. of epochs or steps."
                 )
-            # TODO: move this into the optimiser
+            # TODO: 把这个放到优化器里
             if exp_config["lr_policy"] == "step":
                 nr_steps = int(
                     math.ceil(1. * exp_config["max_epochs"] /
@@ -331,19 +313,19 @@ def cli(**args):
                     for s in range(nr_steps - 1)
                 ]
                 exp_config["lr_steps"] = [
-                    exp_config["lr"] * exp_config["lr_mult"]**s
+                    exp_config["lr"] * exp_config["lr_mult"] ** s
                     for s in range(nr_steps)
                 ]
 
             # setup optimiser
-            # TODO: this might have problems
+            # TODO: 这个好像有问题
             train_op = optimiser.prepare_train_op(exp_config, global_step,
                                                   max_steps)
 
         # Prepare summaries
         summary_mod = imp.load_source('_summaries',
                                       os.path.join(exp_name, 'summaries.py'))
-        # TODO: modify create_summaries to accept optimiser output
+        # TODO: 修改创建摘要以接受优化器输出
         display_fetches, test_fetches = summary_mod.create_summaries(
             mode, exp_config, examples, model.get_outputs(),
             optimiser.get_losses(), optimiser.get_scalars_to_track(),
@@ -353,7 +335,7 @@ def cli(**args):
         summary_op = tf.summary.merge_all()
 
         # Initialise variables
-        LOGGER.info("Initializing variables...")
+        print("Initializing variables...")
         initializer = tf.global_variables_initializer()
         sess.run(initializer)
         # Restore variables from checkpoint
@@ -361,15 +343,15 @@ def cli(**args):
             seg_rest_saver.restore(sess, exp_config['seg_model'])
         if rest_saver is not None:
             rest_saver.restore(sess, checkpoint)
-            
+
         # Get initial step
         fetches = {}
         fetches["global_step"] = global_step
         initial_step = sess.run(fetches)["global_step"]  # [0]
-        LOGGER.info("On global step: %d.", initial_step)
+        print("On global step: "+str(initial_step))
 
         if len(glob.glob(os.path.join(exp_log_fp, mode, 'events.*'))) == 0:
-            LOGGER.info("Summarizing graph...")
+            print("Summarizing graph...")
             sw.add_graph(sess.graph, global_step=initial_step)
         if mode in ['val', 'test', 'eval_train']:
             image_dir = os.path.join(exp_feat_fp, exp_config["dataset"],
@@ -381,14 +363,14 @@ def cli(**args):
         if args["out_fp"] is not None:
             image_dir = args["out_fp"]
         if not args["no_output"]:
-            LOGGER.info("Writing image status to `%s`.", image_dir)
+            print("Writing image status to "+str(image_dir))
         else:
             image_dir = None
         if mode in ['val', 'test', 'eval_train', 'infer_fit', 'infer_segment_fit']:
             shutdown_requested = [False]
 
             def SIGINT_handler(signal, frame):  # noqa: E306
-                LOGGER.warn("Received SIGINT.")
+                printWarn("Received SIGINT.")
                 shutdown_requested[0] = True
 
             signal.signal(signal.SIGINT, SIGINT_handler)
@@ -432,12 +414,10 @@ def cli(**args):
                     for key in test_fetches.keys():
                         if not np.isfinite(results[key]):
                             if 'paths' in results.keys():
-                                LOGGER.warn(
-                                    "There's a problem with results for "
-                                    "%s! Skipping.", results['paths'][0])
+                                printWarn("There's a problem with results for "+
+                                            str(results['paths'][0])+"! Skipping.")
                             else:
-                                LOGGER.warn("Erroneous result for example %d!",
-                                            b_id)
+                                printWarn("Erroneous result for example "+str(b_id))
                             results_valid = False
                             break
                     if results_valid:
@@ -448,33 +428,32 @@ def cli(**args):
                     if shutdown_requested[0]:
                         break
                 except tf.errors.OutOfRangeError:
-                    LOGGER.info("Finished processing the validation/test set")
+                    print("Finished processing the validation/test set")
                     pbar.close()
                     break
-            LOGGER.info("Results:")
+            print("Results:")
             feed_results = dict()
             for key in sorted(test_fetches.keys()):
                 # av_results[key + '_full'] = av_results[key]
                 av_results[key] = np.mean(av_results[key])
                 feed_results[av_placeholders[key]] = av_results[key]
-                LOGGER.info("  %s: %s", key, av_results[key])
+                print(str(key)+":"+str(av_results[key]))
             if shutdown_requested[0]:
-                LOGGER.warn("Not writing results to tf summary due to "
-                            "incomplete evaluation.")
+                printWarn("Not writing results to tf summary due to incomplete evaluation.")
             elif mode not in ['infer_fit', 'infer_segment_fit']:
                 sw.add_summary(
                     sess.run(test_summary, feed_dict=feed_results),
                     initial_step)
             if not args['no_output']:
-                LOGGER.info("Wrote index at `%s`.", index_fp)
+                print("Wrote index at "+str(index_fp))
         elif mode in ['train', 'trainval']:
             # Training.
             last_summary_written = time.time()
             shutdown_requested = [False]  # Needs to be mutable to access.
 
-            # Register signal handler to save on Ctrl-C.
+            # 注册信号处理程序以保存在ctrl-c上
             def SIGINT_handler(signal, frame):  # noqa: E306
-                LOGGER.warn("Received SIGINT. Saving model...")
+                printWarn("WARN: Received SIGINT. Saving model...")
                 saver.save(
                     sess,
                     os.path.join(exp_log_fp, "model"),
@@ -495,7 +474,7 @@ def cli(**args):
                     if (False and (step == 0 or step == 10)):
                         # Save directly at first iteration to make sure this is
                         # working.
-                        LOGGER.info("Saving model...")
+                        print("Saving model...")
                         saver.save(
                             sess,
                             os.path.join(exp_log_fp, "model"),
@@ -504,9 +483,9 @@ def cli(**args):
                     def should(freq, epochs=False):
                         if epochs:
                             return freq > 0 and (
-                                (epoch + 1) % freq == 0 and
-                                (step + 1) % steps_per_epoch == 0
-                                or step == max_steps - 1)
+                                    (epoch + 1) % freq == 0 and
+                                    (step + 1) % steps_per_epoch == 0
+                                    or step == max_steps - 1)
                         else:
                             return freq > 0 and ((step + 1) % freq == 0
                                                  or step == max_steps - 1)
@@ -541,7 +520,7 @@ def cli(**args):
                             or step == max_steps - 1):
                         # Save directly at first iteration to make sure this is
                         # working.
-                        LOGGER.info("Saving model...")
+                        print("Saving model...")
                         saver.save(
                             sess,
                             os.path.join(exp_log_fp, "model"),
@@ -551,7 +530,7 @@ def cli(**args):
                                        results["global_step"])
                         last_summary_written = time.time()
                     if "display" in results.keys():
-                        LOGGER.info("saving display images")
+                        print("saving display images")
                         out_mod.save_images(
                             results["display"],
                             image_dir,
@@ -560,7 +539,7 @@ def cli(**args):
                             latent_mean,
                             step=results["global_step"])  # [0])
                     if should(exp_config["trace_freq"]):
-                        LOGGER.info("recording trace")
+                        print("recording trace")
                         sw.add_run_metadata(run_metadata,
                                             "step_%d" % results["global_step"])
                         trace = timeline.Timeline(
@@ -576,17 +555,17 @@ def cli(**args):
                     if shutdown_requested[0]:
                         break
                 except tf.errors.OutOfRangeError:
-                    LOGGER.info("Epoch completed...")
+                    print("Epoch completed...")
                     preprocessor.initialise_iterator(sess, shuffle=True)
                     # preprocessor.enable_data_augmentation()
                     continue
             pbar.close()
-        LOGGER.info("Shutting down...")
-    LOGGER.info("Done.")
+        print("Shutting down...")
+    print("Done.")
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO, format=LOGFORMAT)
-    logging.getLogger("clustertools.db.tools").setLevel(logging.WARN)
-    logging.getLogger("PIL.Image").setLevel(logging.WARN)
+    # logging.basicConfig(level=logging.INFO, format=LOGFORMAT)
+    # logging.getLogger("clustertools.db.tools").setLevel(logging.WARN)
+    # logging.getLogger("PIL.Image").setLevel(logging.WARN)
     cli()
