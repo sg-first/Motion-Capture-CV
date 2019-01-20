@@ -2,7 +2,7 @@ import os
 import sys
 import logging
 import numpy as np
-import cPickle as pickle
+import pickle
 import scipy.misc as sm
 import matplotlib
 from PIL import Image
@@ -10,7 +10,7 @@ from PIL import Image
 import tensorflow as tf
 import tensorflow.contrib.layers as tfl
 import tensorflow.contrib.slim as slim
-from utils import resnet_v1
+import utils.resnet_v1
 from tensorflow.contrib.slim.python.slim.nets import resnet_v2
 from utils import resnet_utils
 from tensorflow.python.ops import nn_ops
