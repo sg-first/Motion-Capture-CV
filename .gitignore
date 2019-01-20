@@ -1,2 +1,8 @@
 .idea/
 learn/__pycache__/data.cpython-36.pyc
+neural_body_fitting-master/demo_up/config.py
+neural_body_fitting-master/demo_up/model.py
+neural_body_fitting-master/demo_up/optimiser.py
+neural_body_fitting-master/demo_up/options.py
+neural_body_fitting-master/demo_up/preprocessor.py
+neural_body_fitting-master/
