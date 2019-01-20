@@ -117,7 +117,7 @@ def cli(**args):
     """实验的主控"""
     #### 设置输出文件夹 ####
     exp_name = args['exp_name'].strip("/")
-    assert exp_name.startswith(os.path.join("experiments", "config"))
+    # assert exp_name.startswith(os.path.join("experiments", "config")) # 要求以experiments\config开头，要求写这目录名可以理解，但我要是写绝对路径呢
     exp_purename = os.path.basename(exp_name)
     exp_feat_fp = os.path.join("experiments", "features", exp_purename)
     exp_log_fp = os.path.join("experiments", "states", exp_purename)
