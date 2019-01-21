@@ -7,3 +7,6 @@ neural_body_fitting-master/demo_up/model-85582.index
 neural_body_fitting-master/refinenet_up/segmentation/refinenet_up.data-00000-of-00001
 neural_body_fitting-master/refinenet_up/segmentation/refinenet_up.index
 neural_body_fitting-master/refinenet_up/segmentation/refinenet_up.meta
+
+neural_body_fitting-master/external/smpl/
+neural_body_fitting-master/external/up/models/
