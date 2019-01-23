@@ -17,7 +17,7 @@ EIGEN_FP = "/usr/include/eigen3/"
 def cli(key):
     """Print a config value to STDOUT."""
     if key in globals().keys():
-        print globals()[key]
+        print(globals()[key])
     else:
         raise Exception("Requested configuration value not available! "
                         "Available keys: " +

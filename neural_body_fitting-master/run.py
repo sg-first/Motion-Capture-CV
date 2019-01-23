@@ -15,6 +15,7 @@ import tensorflow as tf
 from tensorflow.python.client import timeline
 import tqdm
 
+
 def printWarn(s):
     print("WARN: "+s)
 
