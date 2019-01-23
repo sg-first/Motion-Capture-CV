@@ -1,11 +1,12 @@
 """Segmentation model."""
 # pylint: disable=invalid-name, no-member
 import os.path as path
-import cPickle as pickle
+import pickle
 import logging
 from collections import OrderedDict
 import numpy as _np
 import scipy.spatial as _sspatial
+
 
 
 LOGGER = logging.getLogger(__name__)
@@ -16,8 +17,8 @@ def enum(*sequential):
     """Reversible, ordered enum."""
     kv_tuples_complete = zip(sequential, range(len(sequential)))
     enums = OrderedDict(kv_tuples_complete)
-    reverse = OrderedDict((value, key) for key, value in enums.iteritems())
-    enums['keys'] = enums.keys()[:]  # Ignore the reverse_mapping
+    reverse = OrderedDict((value, key) for key, value in enums.items())
+    enums['keys']=list(enums.keys())[:]  # Ignore the reverse_mapping
     enums['reverse_mapping'] = reverse
     return type('Enum', (), enums)
 
@@ -26,8 +27,8 @@ def named_enum(kv_tuples):
     """Reversible, ordered enum."""
     kv_tuples_complete = kv_tuples
     enums = OrderedDict(kv_tuples_complete)
-    reverse = OrderedDict((value, key) for key, value in enums.iteritems())
-    enums['keys'] = enums.keys()[:]
+    reverse = OrderedDict((value, key) for key, value in enums.items())
+    enums['keys']=list(enums.keys())[:]
     enums['reverse_mapping'] = reverse
     return type('Enum', (), enums)
 
@@ -346,8 +347,7 @@ with open(path.join(path.dirname(__file__),
                     '..', 'models', 'pose', 'landmarks.pkl'), 'rb') as inf:
     landmark_mesh_91 = pickle.load(inf)
 
-landmarks_91 = enum(
-    *(joints_lsp.reverse_mapping.values()[:-2] + landmark_mesh_91.keys()))
+landmarks_91 = enum(*(list(joints_lsp.reverse_mapping.values())[:-2] +list(landmark_mesh_91.keys())))
 
 rlswap_landmarks_91 = []
 for idx, name in landmarks_91.reverse_mapping.items():
@@ -359,7 +359,7 @@ for idx, name in landmarks_91.reverse_mapping.items():
         rlswap_landmarks_91.append(idx)
 rlswap_landmarks_91 = tuple(rlswap_landmarks_91)  # pylint: disable=redefined-variable-type
 
-reduction_91tolsp = tuple(range(12) + [landmarks_91.neck, landmarks_91.head_top])
+reduction_91tolsp = tuple(list(range(12)) + list([landmarks_91.neck, landmarks_91.head_top]))
 
 THICKNESS_THIN = 2
 THICKNESS_THICK = 4
