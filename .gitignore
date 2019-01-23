@@ -1,5 +1,5 @@
 .idea/
-learn/__pycache__/data.cpython-36.pyc
+learn/__pycache__/
 neural_body_fitting-master/demo_up/checkpoint
 neural_body_fitting-master/demo_up/model-85582.data-00000-of-00001
 neural_body_fitting-master/demo_up/model-85582.meta
@@ -7,7 +7,5 @@ neural_body_fitting-master/demo_up/model-85582.index
 neural_body_fitting-master/refinenet_up/segmentation/refinenet_up.data-00000-of-00001
 neural_body_fitting-master/refinenet_up/segmentation/refinenet_up.index
 neural_body_fitting-master/refinenet_up/segmentation/refinenet_up.meta
-
-
-neural_body_fitting-master/external/up/models/3D/head_vid_heva.pkl
 neural_body_fitting-master/external/up/models/
+neural_body_fitting-master/datasets/metadata/__pycache__/
