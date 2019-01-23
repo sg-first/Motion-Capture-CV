@@ -8,8 +8,6 @@ neural_body_fitting-master/refinenet_up/segmentation/refinenet_up.data-00000-of-
 neural_body_fitting-master/refinenet_up/segmentation/refinenet_up.index
 neural_body_fitting-master/refinenet_up/segmentation/refinenet_up.meta
 
-neural_body_fitting-master/external/smpl/
+
+neural_body_fitting-master/external/up/models/3D/head_vid_heva.pkl
 neural_body_fitting-master/external/up/models/
-neural_body_fitting-master/datasets/metadata/__pycache__/
-
-
