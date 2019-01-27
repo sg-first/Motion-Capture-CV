@@ -6,6 +6,7 @@ import pickle
 import scipy.misc as sm
 import matplotlib
 from PIL import Image
+from utils import resnet_v1
 
 import tensorflow as tf
 import tensorflow.contrib.layers as tfl

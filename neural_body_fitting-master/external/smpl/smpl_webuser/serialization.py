@@ -28,6 +28,7 @@ import chumpy as ch
 from chumpy.ch import MatVecMult
 from .posemapper import posemap
 from .verts import verts_core
+
     
 def save_model(model, fname):
     m0 = model
@@ -77,8 +78,8 @@ def backwards_compatibility_replacements(dd):
 def ready_arguments(fname_or_dict):
 
     if not isinstance(fname_or_dict, dict):
-        f = open(fname_or_dict,'r', encoding='UTF-8')
-        dd = pickle.load(f)
+
+         dd = pickle.load(open(fname_or_dict,  "rb"), encoding='iso-8859-1')
 
     else:
         dd = fname_or_dict

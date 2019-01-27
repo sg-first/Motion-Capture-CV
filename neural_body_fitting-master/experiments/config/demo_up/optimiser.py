@@ -3,7 +3,7 @@ import sys
 import itertools
 import numpy as np
 import tensorflow as tf
-import cPickle as pickle
+import pickle
 
 from utils import conversions
 
