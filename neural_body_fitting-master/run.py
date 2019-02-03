@@ -20,6 +20,7 @@ def printWarn(s):
     print("WARN: "+s)
 
 def create_restoration_saver(ckpt_path, cur_graph, name='restore', silent=True):
+
     # load graph from meta file and get ckpt variables
     load_graph = tf.Graph()
     with load_graph.as_default():
@@ -52,7 +53,6 @@ def create_restoration_saver(ckpt_path, cur_graph, name='restore', silent=True):
         rest_saver = tf.train.Saver(
             [v for v in tf.global_variables() if v.name in rest_var_names],
             name=name)
-
     return rest_saver
 
 
@@ -253,12 +253,15 @@ def cli(**args):
         if checkpoint is None:
             print("No checkpoint found. Continuing without.")
         else:
+            print(os.path.abspath(checkpoint))
             rest_saver = create_restoration_saver(checkpoint,
                                                   tf.get_default_graph())
+            print(rest_saver is None)
     if mode in ['infer_segment_fit']:
         seg_rest_saver = create_restoration_saver(exp_config['seg_model'],
                                                   tf.get_default_graph(),
                                                   name='seg_restore')
+
 
     if mode not in ['train', 'trainval'] and rest_saver is None:
         raise Exception("The mode %s requires a checkpoint!" % (mode))

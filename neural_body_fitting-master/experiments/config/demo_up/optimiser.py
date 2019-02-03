@@ -4,8 +4,17 @@ import itertools
 import numpy as np
 import tensorflow as tf
 import pickle
-
 from utils import conversions
+
+
+
+class StrToBytes:
+    def __init__(self, fileobj):
+        self.fileobj = fileobj
+    def read(self, size):
+        return self.fileobj.read(size).encode()
+    def readline(self, size=-1):
+        return self.fileobj.readline(size).encode()
 
 _JOINT_OFFSETS = 'helper_data/joint_offsets.pkl'
 _TUKEY_PARAMS = 'helper_data/stats/tukey_mad_%d.npy'
@@ -84,7 +93,8 @@ class Optimiser():
             sqeuclidist = lambda pred, gt: tf.reduce_sum(sqerr(pred, gt), axis=2)
 
             with open(_JOINT_OFFSETS, 'rb') as f:
-                joint_offsets = pickle.load(f)['euclidist']['std']
+                joint_offsets = pickle.load(f, encoding='iso-8859-1')['euclidist']['std']
+
 
             num_landmarks = config['num_landmarks']
             mad_estimate = np.load(_TUKEY_PARAMS % (num_landmarks))

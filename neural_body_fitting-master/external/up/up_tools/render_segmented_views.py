@@ -7,7 +7,7 @@ import sys
 import logging as _logging
 from copy import copy as _copy
 from glob import glob as _glob
-import cPickle as _pickle
+import  _pickle
 import os as _os
 import os.path as _path
 

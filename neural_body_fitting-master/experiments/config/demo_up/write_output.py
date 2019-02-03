@@ -5,7 +5,7 @@ import os.path as path
 import numpy as np
 from collections import OrderedDict
 import logging
-import cPickle as pickle
+import  pickle
 import scipy.misc as sm
 import skimage.draw as skdraw
 from PIL import Image
@@ -17,7 +17,7 @@ logging.basicConfig()
 logger = logging.getLogger('opendr.lighting')
 logger.propagate = False
 
-_PATH_TO_MESH = 'models/smpl/template-bodyparts-corrected-labeled-split12.ply'
+_PATH_TO_MESH = 'models/smpl/ path_to_mesh=_PATH_TO_MESH)[0]-bodyparts-corrected-labeled-split12.ply'
 
 LOGGER = logging.getLogger(__name__)
 
