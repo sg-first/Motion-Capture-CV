@@ -17,7 +17,7 @@ logging.basicConfig()
 logger = logging.getLogger('opendr.lighting')
 logger.propagate = False
 
-_PATH_TO_MESH = 'models/smpl/ path_to_mesh=_PATH_TO_MESH)[0]-bodyparts-corrected-labeled-split12.ply'
+_PATH_TO_MESH = 'models/smpl/template-bodyparts-corrected-labeled-split12.ply'
 
 LOGGER = logging.getLogger(__name__)
 

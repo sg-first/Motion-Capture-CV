@@ -277,6 +277,7 @@ def render_body_impl(stored_params,  # pylint: disable=too-many-arguments
                      use_light=False,
                      factor=1.,
                      path_to_mesh=None):
+    basestring=str
     """Create a SMPL rendering."""
     if resolution is None:
         resolution = [640, 480]

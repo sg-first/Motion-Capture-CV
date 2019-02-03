@@ -253,10 +253,8 @@ def cli(**args):
         if checkpoint is None:
             print("No checkpoint found. Continuing without.")
         else:
-            print(os.path.abspath(checkpoint))
             rest_saver = create_restoration_saver(checkpoint,
                                                   tf.get_default_graph())
-            print(rest_saver is None)
     if mode in ['infer_segment_fit']:
         seg_rest_saver = create_restoration_saver(exp_config['seg_model'],
                                                   tf.get_default_graph(),

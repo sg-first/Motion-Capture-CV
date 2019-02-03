@@ -7,15 +7,6 @@ import pickle
 from utils import conversions
 
 
-
-class StrToBytes:
-    def __init__(self, fileobj):
-        self.fileobj = fileobj
-    def read(self, size):
-        return self.fileobj.read(size).encode()
-    def readline(self, size=-1):
-        return self.fileobj.readline(size).encode()
-
 _JOINT_OFFSETS = 'helper_data/joint_offsets.pkl'
 _TUKEY_PARAMS = 'helper_data/stats/tukey_mad_%d.npy'
 
