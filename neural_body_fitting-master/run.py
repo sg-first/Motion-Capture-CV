@@ -20,7 +20,6 @@ def printWarn(s):
     print("WARN: "+s)
 
 def create_restoration_saver(ckpt_path, cur_graph, name='restore', silent=True):
-
     # load graph from meta file and get ckpt variables
     load_graph = tf.Graph()
     with load_graph.as_default():
@@ -30,13 +29,12 @@ def create_restoration_saver(ckpt_path, cur_graph, name='restore', silent=True):
                      for v in tf.global_variables()]
     # get list of variables current graph
     with cur_graph.as_default():
-        graph_vars = [(v.name, tuple(v.shape.as_list()))
+        graph_vars = [(v.name, tuple(v.shape.as_list())) # 存储为name和shape元组
                       for v in tf.global_variables()]
-        # list of variables to restore (i.e. intersection of
-        # ckpt_vars, graph_vars)
+        # 要恢复的变量列表(即ckpt_vars, graph_vars的交集)
         rest_vars = list(set(graph_vars).intersection(set(ckpt_vars)))
         rest_var_names = [v[0] for v in rest_vars]
-        # stop program if the specified checkpoint has no variables of interest
+        # 如果指定的检查点没有感兴趣的变量，则停止程序
         if len(rest_vars) == 0:
             raise ValueError(
                 'Specified checkpoint has no variables in common with the current model.'
@@ -53,6 +51,7 @@ def create_restoration_saver(ckpt_path, cur_graph, name='restore', silent=True):
         rest_saver = tf.train.Saver(
             [v for v in tf.global_variables() if v.name in rest_var_names],
             name=name)
+
     return rest_saver
 
 
@@ -259,7 +258,6 @@ def cli(**args):
         seg_rest_saver = create_restoration_saver(exp_config['seg_model'],
                                                   tf.get_default_graph(),
                                                   name='seg_restore')
-
 
     if mode not in ['train', 'trainval'] and rest_saver is None:
         raise Exception("The mode %s requires a checkpoint!" % (mode))
