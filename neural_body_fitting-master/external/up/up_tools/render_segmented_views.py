@@ -5,6 +5,7 @@ from __future__ import print_function
 
 import sys
 import logging as _logging
+import numpy as np
 from copy import copy as _copy
 from glob import glob as _glob
 import  _pickle
@@ -55,6 +56,7 @@ def _rodrigues_from_seq(angles_seq):
     for angle in angles_seq[::-1]:
         rot = rot.dot(_cv2.Rodrigues(angle)[0])
     return _cv2.Rodrigues(rot)[0].flatten()
+
 
 
 def _create_renderer(  # pylint: disable=too-many-arguments
@@ -144,6 +146,18 @@ def _simple_renderer(rn, meshes, yrot=0, texture=None, use_light=False):
             light_pos=_rotateY(_np.array([-500, 500, 1000]), yrot),
             vc=albedo,
             light_color=_np.array([.7, .7, .7]))
+    flipXRotation = np.array([[1.0, 0.0, 0.0, 0.0],
+                              [0.0, -1.0, 0., 0.0],
+                              [0.0, 0., -1.0, 0.0],
+                              [0.0, 0.0, 0.0, 1.0]])
+    rn.camera.openglMat = flipXRotation  # this is from setupcamera in utils
+    rn.glMode = 'glfw'
+    rn.sharedWin = None
+    rn.overdraw = True
+    rn.nsamples = 8
+    rn.msaa = True  # Without anti-aliasing optimization often does not work.
+    rn.initGL()
+    rn.debug = False
     return rn.r
 
 
