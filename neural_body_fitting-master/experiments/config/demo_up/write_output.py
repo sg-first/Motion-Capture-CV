@@ -40,8 +40,9 @@ def append_index(row_infos, image_dir, mode):
             if colt == 'text':
                 index.write("<td>%s</td>" % (colc))
             elif colt == 'image':
+                d = str(row_info['name'][0], encoding='utf-8')
                 filename = path.join(image_dir,
-                                     row_info['name'][0] + '_' + coln + '.png')
+                                     d + '_' + coln + '.png')
                 if isinstance(colc, str):
                     with open(filename, 'w') as outf:
                         outf.write(colc)
@@ -51,12 +52,14 @@ def append_index(row_infos, image_dir, mode):
                 index.write("<td><img src='images/%s'></td>" % (
                     path.basename(filename)))
             elif colt == 'plain':
+                d=str(row_info['name'][0],encoding='utf-8')
                 filename = path.join(image_dir,
-                                     row_info['name'][0] + '_' + coln + '.npy')
+                                     d + '_' + coln + '.npy')
                 np.save(filename, colc)
                 if coln == 'body':
+                    d=str(row_info['name'][0],encoding='utf-8')
                     with open(os.path.join(image_dir, 
-                                           row_info['name'][0] + '_body.pkl'), 'wb') as f:
+                                           d + '_body.pkl'), 'wb') as f:
                         pickle.dump(colc, f)
             else:
                 raise Exception("Unsupported mode: %s." % (mode))
