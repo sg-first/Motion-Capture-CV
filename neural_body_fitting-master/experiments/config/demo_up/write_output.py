@@ -161,15 +161,17 @@ def save_images(fetches, image_dir, mode, config, latent_mean, step=None, batch=
                                          resolution=np.array([crop_size, crop_size], dtype=int),
                                          quiet=True,
                                          use_light=True,
-                                         path_to_mesh=_PATH_TO_MESH)[0]
+                                         path_to_mesh=_PATH_TO_MESH)[0] # 这个好像就是结果
 
             blend_indices = np.where(np.all(rendering==255, axis=2))
-            rendering[blend_indices] = fetches["input"][im_idx][blend_indices]
+            rendering[blend_indices] = fetches["input"][im_idx][blend_indices] # 这个不知道在进行什么修改
             row_info["output"] = (rendering, 'image')
             
         elif visualise == 'pose':
             img = np.zeros((crop_size, crop_size, 3), dtype=np.uint8)
-            joints = fetches["joints2d_pred"][im_idx]
+            joints = fetches["join" \
+                             "" \
+                             "ts2d_pred"][im_idx] # image_joints2d_pred.npy（那3D关节呢？）
             for i in range(joints.shape[0]):
                 rr, cc = skdraw.circle(joints[i,0], joints[i,1], 3, shape=(crop_size, crop_size))
                 for j in range(3):
@@ -179,5 +181,5 @@ def save_images(fetches, image_dir, mode, config, latent_mean, step=None, batch=
         row_infos.append(row_info)
         LOGGER.debug("Processed image %d.",
                      batch * batch_size + im_idx + 1)
-    index_fp = append_index(row_infos, image_dir, mode)
+    index_fp = append_index(row_infos, image_dir, mode) # row_infos是结果
     return index_fp
