@@ -26,8 +26,8 @@ import numpy as np
 import pickle
 import chumpy as ch
 from chumpy.ch import MatVecMult
-from .posemapper import posemap
-from .verts import verts_core
+from posemapper import posemap
+from verts import verts_core
 
     
 def save_model(model, fname):

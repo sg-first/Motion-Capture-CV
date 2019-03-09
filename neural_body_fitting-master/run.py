@@ -15,7 +15,7 @@ import tensorflow as tf
 from tensorflow.python.client import timeline
 import tqdm
 
-
+import sys
 def printWarn(s):
     print("WARN: "+s)
 
@@ -565,6 +565,7 @@ def cli(**args):
 
 
 if __name__ == '__main__':
+    sys.path.append('external/smpl/smpl_webuser')
     # logging.basicConfig(level=logging.INFO, format=LOGFORMAT)
     # logging.getLogger("clustertools.db.tools").setLevel(logging.WARN)
     # logging.getLogger("PIL.Image").setLevel(logging.WARN)

@@ -22,8 +22,9 @@ Modules included:
 '''
 
 import chumpy
-import external.smpl.smpl_webuser.lbs as lbs
-from .posemapper import posemap
+import lbs
+#import external.smpl.smpl_webuser.lbs as lbs
+from posemapper import posemap
 import scipy.sparse as sp
 from chumpy.ch import MatVecMult
 
