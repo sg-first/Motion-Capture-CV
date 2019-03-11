@@ -43,15 +43,18 @@ the hello world script now by typing the following:
 
 from serialization import load_model
 import numpy as np
+import pickle
 
 ## Load SMPL model (here we load the female model)
 ## Make sure path is correct
-m = load_model( '../../models/basicModel_f_lbs_10_207_0_v1.0.0.pkl' )
+m = load_model( '../../models/basicModel_m_lbs_10_207_0_v1.0.0.pkl' )
 
-## Assign random pose and shape parameters
-m.pose[:] = np.random.rand(m.pose.size) * .2
-m.betas[:] = np.random.rand(m.betas.size) * .03
-
+m3= pickle.load(open('E:/pyproject/MCCV/neural_body_fitting-master/demo/up/output/images/06218_image_body.pkl','rb'),encoding='iso-8859-1')
+# Assign random pose and shape parameters
+m.pose[:] =m3['pose']
+#m.pose[:] = np.random.rand(m.pose.size) * .2
+#m.betas[:] = np.random.rand(m.betas.size) * .03
+m.betas[:]=m3['betas']
 ## Write to an .obj file
 outmesh_path = './hello_smpl.obj'
 with open( outmesh_path, 'w') as fp:
