@@ -83,7 +83,7 @@ def ready_arguments(fname_or_dict):
 
     else:
         dd = fname_or_dict
-        
+
     backwards_compatibility_replacements(dd)
         
     want_shapemodel = 'shapedirs' in dd
