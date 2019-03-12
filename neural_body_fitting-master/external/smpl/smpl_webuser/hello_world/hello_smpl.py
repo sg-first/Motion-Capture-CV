@@ -1,19 +1,20 @@
 from serialization import load_model
 import pickle
+import numpy as np
 
-def makeObj(path):
+def makeObj(path=''):
     ## Load SMPL model (here we load the female model)
     ## Make sure path is correct
     m = load_model('../../models/basicModel_m_lbs_10_207_0_v1.0.0.pkl')
 
-    m3 = pickle.load(
-        open(path, 'rb'),
-        encoding='iso-8859-1')
-    # Assign random pose and shape parameters
-    m.pose[:] = m3['pose']
-    m.betas[:] = m3['betas']
-    # m.pose[:] = np.random.rand(m.pose.size) * .2
-    # m.betas[:] = np.random.rand(m.betas.size) * .03
+    if path!='':
+        m3 = pickle.load(open(path, 'rb'),encoding='iso-8859-1')
+        m.pose[:] = m3['pose']
+        m.betas[:] = m3['betas']
+    else:
+        # Assign random pose and shape parameters
+        m.pose[:] = np.random.rand(m.pose.size) * .2
+        m.betas[:] = np.random.rand(m.betas.size) * .03
 
     ## Write to an .obj file
     outmesh_path = './hello_smpl.obj'
