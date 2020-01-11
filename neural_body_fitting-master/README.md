@@ -1,13 +1,11 @@
 # Neural Body Fitting code repository
 
-![example_output](/demo/up/examples.png)
-
 ## Setup:
 * `git clone --recursive http://github.com/mohomran/neural_body_fitting`
 * create and activate a fresh virtualenv
 * `pip install tensorflow-gpu==1.6.0` (or `tensorflow==1.6.0`)
 * inside the root folder run `pip install -r requirements.txt`
-* navigate to `external/up` and run `python setup.py develop` (which will install the UP toolbox)
+* navigate to `external/up` and run `python setup.py develop` (which will install the [UP-toolbox](/neural_body_fitting-master/external/up/) )
 * download SMPL (at http://smpl.is.tue.mpg.de/downloads) and unzip to `external/`
 * download the [segmentation model](http://transfer.d2.mpi-inf.mpg.de/mohomran/nbf/refinenet_up.tgz) and extract into `models/`
 * download the [fitting model](http://transfer.d2.mpi-inf.mpg.de/mohomran/nbf/demo_up.tgz) and extract into `experiments/states`

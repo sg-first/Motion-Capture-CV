@@ -5,8 +5,7 @@ Requirements:
 * OpenCV (on Ubuntu, e.g., install libopencv-dev and python-opencv).
 * SMPL (download at http://smpl.is.tue.mpg.de/downloads) and unzip to a 
   place of your choice.
-* OpenDR (just run `pip install opendr`, unfortunately can't be done
-  automatically with the setuptools requirements.
+* OpenDR (you can download it at [here](https://gitee.com/sg-first/opendr3)
 * If you want to train a segmentation model, Deeplab V2
   (https://bitbucket.org/aquariusjay/deeplab-public-ver2) with a minimal patch
   applied that can be found in the subdirectory `patches`, to enable on the fly
